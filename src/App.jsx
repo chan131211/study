@@ -1,22 +1,17 @@
 import React, { Component } from 'react'
-import {Button, message, Calendar} from 'antd'
+import {BrowserRouter, Route, Switch} from 'react-router-dom'
+import Admin from './pages/admin/Admin'
+import Login from './pages/login/Login'
 export default class App extends Component {
-    clickHandler = () => {
-        message.success('添加成功')
-    }
-    onPanelChange = (value, mode) => {
-        console.log(value, mode)
-    }
     render() {
         return (
             <div>
-                <h1>后台首页</h1>
-                <Button type="primary" onClick={this.clickHandler}>Primary</Button>
-                <Button>Default</Button>
-                <Button type="dashed">Dashed</Button>
-                <Button type="danger">Danger</Button>
-                <Button type="link">Link</Button>
-                <Calendar onPanelChange={this.onPanelChange} />
+                <BrowserRouter>
+                    <Switch>
+                        <Route path="/login" component={Login}/>
+                        <Route path="/" component={Admin}/>
+                    </Switch>
+                </BrowserRouter>
             </div>
         )
     }
