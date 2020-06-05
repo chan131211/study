@@ -1,25 +1,31 @@
 import React, { Component } from 'react'
 import logo from '../../assets/images/logo.jpg'
-import {Form, Input, Button,Icon} from 'antd'
+import {Form, Input, Button,Icon, message} from 'antd'
 import './login.less'
-
+import {loginRequest} from '../../api'
 const Item = Form.Item
 
 class Login extends Component {
     handleSubmit = e => {
         e.preventDefault()
         const form = this.props.form
-        const values = form.getFieldsValue()
+        // const values = form.getFieldsValue()
         // console.log(form)
         // console.log(values)
 
 
         // 进行表单的统一验证
-        // form.validatoFields((err, values) => {
-        //     if(!err) {
-        //         console.log(values)
-        //     }
-        // })
+        form.validateFields(async (err, {username, password}) => {
+            if(!err) {
+                let resData = await loginRequest(username, password)
+                // console.log(resData)
+                if (resData.status == 0) {
+                    message.success('登陆成功')
+                } else {
+                    message.error(resData.msg)
+                }
+            }
+        })
     }
 
     // 验证密码
@@ -27,9 +33,9 @@ class Login extends Component {
         value = value.trim()
         if (!value) {
             callback('必须输入密码!')
-        } else if (value.length < 8) {
-            callback('密码长度必须大于等于8位!')
-        } else if (value.length > 16) {
+        } else if (value.length < 5) {
+            callback('密码长度必须大于等于6位!')
+        } else if (value.length > 17) {
             callback('密码长度必须小于等于16位!')
         } else if (!/^[a-zA-Z0-9_]+$/.test(value)) {
             callback('密码必须是字母、数字、下划线组成!')
@@ -53,7 +59,7 @@ class Login extends Component {
                         getFieldDecorator('username', {
                             rules: [
                                 { required: true, message: '必须填写用户名!' },
-                                { min: 6, message: '用户名不能小于6位!' },
+                                { min: 5, message: '用户名不能小于5位!' },
                                 { max: 20, message: '用户名不能大于20位!' },
                                 { pattern: /^[a-zA-Z][a-zA-Z0-9_]+$/, message: '用户名必须为字母数字或下划线，以字母开头!' }
                             ]
