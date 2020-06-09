@@ -3,6 +3,9 @@ import logo from '../../assets/images/logo.jpg'
 import {Form, Input, Button,Icon, message} from 'antd'
 import './login.less'
 import {loginRequest} from '../../api'
+import localUtils from '../../utils/localUtils'
+import memUtils from '../../utils/memUtils'
+import {Redirect} from 'react-router-dom'
 const Item = Form.Item
 
 class Login extends Component {
@@ -18,9 +21,14 @@ class Login extends Component {
         form.validateFields(async (err, {username, password}) => {
             if(!err) {
                 let resData = await loginRequest(username, password)
-                // console.log(resData)
-                if (resData.status == 0) {
+                if (resData.status === 0) {
+                    //将用户登陆信息写入本地
+                    localUtils.saveLoginData(resData.result)
+                    //将用户登陆信息写入内存
+                    memUtils.isLogin = resData.result
                     message.success('登陆成功')
+                    //跳转到后台首页
+                    this.props.history.push('/')
                 } else {
                     message.error(resData.msg)
                 }
@@ -44,7 +52,15 @@ class Login extends Component {
         }
     }
     render() {
+
         const {getFieldDecorator} = this.props.form
+
+        //获取用户登陆信息
+        // const userData = localUtils.getLoginData()
+        const userData = memUtils.isLogin
+        if (userData._id) {
+            return <Redirect to="/"/>
+        }
         return (
             <div className="login">
                 <div className="login-header">
@@ -97,6 +113,6 @@ class Login extends Component {
     }
 }
 
-const   WrappedLogin = Form.create()(Login)
+const WrappedLogin = Form.create()(Login)
 
 export default WrappedLogin
