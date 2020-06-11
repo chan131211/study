@@ -7,7 +7,7 @@ import LeftNav from '../../components/left-nav/LeftNav'
 import Header from '../../components/header/Header'
 import Home from '../home/Home'
 import Goods from '../goods/Goods'
-import Categorys from '../categorys/Categorys'
+import Category from '../categorys/Category'
 import './admin.less'
 
 const { Footer, Sider, Content } = Layout;
@@ -27,13 +27,14 @@ export default class Admin extends Component {
                     <Header/>
                     <Content>
                         <Switch>
-                            <Route path="/home" component={Home}/>
-                            <Route path="/goods" component={Goods}/>
-                            <Route paht="/categorys" component={Categorys}/>
-                            <Redirect to="/home"/>
+                            <Route path="/admin/home" component={Home}/>
+                            <Route path="/admin/goods" component={Goods}/>
+                            <Route path="/admin/category" component={Category}/>
+
+                            <Redirect to="/admin/home"/>
                         </Switch>
                     </Content>
-                    <Footer>Footer</Footer>
+                    <Footer style={{ textAlign: 'center', color: '#000', borderTop: '1px solid #37DFBC'}}>本系统推荐使用最新版谷歌浏览器以获得最佳浏览效果</Footer>
                 </Layout>
             </Layout>
         )

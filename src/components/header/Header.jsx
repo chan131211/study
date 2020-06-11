@@ -1,11 +1,32 @@
 import React, { Component } from 'react'
-import {Button, Modal} from 'antd'
+import {Modal} from 'antd'
 import {withRouter} from 'react-router-dom'
 import './header.less'
 import memUtils from '../../utils/memUtils'
 import localUtils from '../../utils/localUtils'
+import MyButton from '../my-button/MyButton'
+import {getDate} from '../../utils/timeUtils'
 
 class Header extends Component {
+
+    state = {
+        currentTime: getDate(Date.now())
+    }
+
+    componentDidMount() {
+        //开启定时器
+        this.timer = setInterval(() => {
+            this.setState({
+                currentTime: getDate(Date.now())
+            })
+        }, 1000)
+    }
+
+    componentWillMount() {
+        //清除定时器
+        clearInterval(this.timer)
+    }
+
     logoutHandler = () => {
         const {confirm} = Modal
         confirm({
@@ -24,17 +45,20 @@ class Header extends Component {
     }
 
     render() {
+        const {currentTime} = this.state    
         return (
             <div className="header">
                 <div className="header-top">
                     欢迎， {memUtils.isLogin.username} &nbsp; &nbsp;
-                    <Button onClick={this.logoutHandler}>退出</Button>
+                    <MyButton onClick={this.logoutHandler}>退出</MyButton>
                 </div>
                 <div className="header-bottom">
-                    <div className="header-botton-left">
+                    <div className="header-bottom-left">
                         首页
                     </div>
-                    <div className="header-bottom-right"></div>
+                    <div className="header-bottom-right">
+                        <span>{currentTime}</span>
+                    </div>
                 </div>
             </div>
         )
