@@ -1,13 +1,15 @@
 import React, { Component } from 'react'
-import {Form, Input} from 'antd'
+import {Form, Input, Select} from 'antd'
 import PropTypes from 'prop-types'
 
 const Item = Form.Item
+const Option = Select.Option
 
 class CategoryFrom extends Component {
 
     static propTypes = {
         getForm: PropTypes.func.isRequired
+
     }
 
     componentWillMount() {
@@ -16,15 +18,52 @@ class CategoryFrom extends Component {
     }
 
     render() {
-        const {getFieldDecorator} = this.props.form
+        const { getFieldDecorator } = this.props.form
+        const { parentId, categorys } = this.props
+        const { _id, name, flag } = this.props
 
+        if (flag) {
+            return (
+                <Form>
+                    <Item>
+                    {getFieldDecorator('_id', {
+                        initialValue: _id,
+                        rules: [],
+                    })(
+                        <Input type="hidden"/>
+                    )}
+                    </Item>
+                    <Item>
+                    {getFieldDecorator('name', {
+                        initialValue: name,
+                        rules: [{ required: true, message: '分类名称必填!' }],
+                    })(
+                        <Input type="text" placeholder="请输入分类名称"/>
+                    )}
+                    </Item>
+                </Form>
+            ) 
+        }
         return (
             <Form>
                 <Item>
-                {getFieldDecorator('categoryName', {
+                {getFieldDecorator('parentId', {
+                    initialValue: parentId,
+                    rules: [],
+                })(
+                    <Select>
+                        <Option value='0' >顶级分类</Option>
+                        {
+                            categorys.map(item => <Option value={item._id} key={item._id}>{item.name}</Option>)
+                        }
+                    </Select>
+                )}
+                </Item>
+                <Item>
+                {getFieldDecorator('name', {
                     rules: [{ required: true, message: '分类名称必填!' }],
                 })(
-                    <Input type="text"placeholder="请输入分类名称"/>
+                    <Input type="text" placeholder="请输入分类名称"/>
                 )}
                 </Item>
             </Form>
