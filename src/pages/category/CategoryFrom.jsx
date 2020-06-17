@@ -19,8 +19,9 @@ class CategoryFrom extends Component {
 
     render() {
         const { getFieldDecorator } = this.props.form
-        const { parentId, categorys } = this.props
+        const { categorys } = this.props
         const { _id, name, flag } = this.props
+        
 
         if (flag) {
             return (
@@ -48,7 +49,7 @@ class CategoryFrom extends Component {
             <Form>
                 <Item>
                 {getFieldDecorator('parentId', {
-                    initialValue: parentId,
+                    initialValue: '0',
                     rules: [],
                 })(
                     <Select>

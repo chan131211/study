@@ -6,8 +6,8 @@ import { Layout } from 'antd'
 import LeftNav from '../../components/left-nav/LeftNav'
 import Header from '../../components/header/Header'
 import Home from '../home/Home'
-import Goods from '../goods/Goods'
-import Category from '../categorys/Category'
+import Product from '../product/Product'
+import Category from '../category/Category'
 import './admin.less'
 
 const { Footer, Sider, Content } = Layout;
@@ -28,7 +28,7 @@ export default class Admin extends Component {
                     <Content>
                         <Switch>
                             <Route path="/admin/home" component={Home}/>
-                            <Route path="/admin/goods" component={Goods}/>
+                            <Route path="/admin/product" component={Product}/>
                             <Route path="/admin/category" component={Category}/>
 
                             <Redirect to="/admin/home"/>
