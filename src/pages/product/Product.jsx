@@ -1,11 +1,16 @@
 import React, { Component } from 'react'
+import {Route, Switch, Redirect} from 'react-router-dom'
+import ProductHome from './Home'
+import ProductAdd from './Add'
 
-export default class Goods extends Component {
+export default class Product extends Component {
     render() {
         return (
-            <div>
-                <h2>goods</h2>
-            </div>
+                <Switch>
+                    <Route path="/admin/product" exact component={ProductHome}/>
+                    <Route path="/admin/product/add" component={ProductAdd}/>
+                    <Redirect to="/admin/product"/>
+                </Switch>  
         )
     }
 }
