@@ -20,5 +20,10 @@ export const menuList = [
                 icon: 'linkedin'
             }
         ]
+    },
+    {
+        title: '角色管理',
+        key: '/admin/role',
+        icon: 'user'
     }
 ]

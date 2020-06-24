@@ -1,6 +1,7 @@
+
 export const Debounce = (fun, delay) => {
-    var timer
-    return function() {
+    var timer;
+    return function () {
         var _this = this
         var args = arguments
         if (timer) {

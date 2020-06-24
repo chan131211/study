@@ -1,25 +1,49 @@
 import ajax from './ajax.js'
 
+//登录请求
 export const loginRequest = (username, password) => ajax.post('/login', { username, password })
 
+//添加商品分类请求
 export const reqAddCategory =  (name, parentId) => ajax.post('/manage/category/add', { name, parentId })
 
+//获取商品分类请求
 export const reqGetCategorys = (parentId) => ajax.get('/manage/category/list?parentId=' + parentId)
 
+//更新商品分类请求
 export const reqUpdateCategory = (_id, name) => ajax.post('/manage/category/update', { _id, name })
 
+//获取所有商品分类请求
 export const reqAllCategorys = () => ajax.get('/manage/category/all')
 
+//删除商品分类请求
 export const reqdelCategory = (_id) => ajax.get('/manage/category/del?_id=' + _id)
 
+//删除商品图片请求
 export const reqdelImage = (name) => ajax.post('/manage/img/del', { name })
 
-export const reqAddProduct = (product) => ajax.post('/manage/product/add', { product })
+//添加/更新商品请求
+export const reqAddOrUpdateProduct = (product, _id) => ajax.post(`/manage/product/${ _id ? 'update' : 'add' }`, { product, _id })
 
-export const reqGetProducts = () => ajax.get('/manage/product/list')
+//获取商品请求
+export const reqGetProducts = (pageNum, pageSize) => ajax.get('/manage/product/list', { params: { pageNum, pageSize }})
 
+//查找同名商品请求
 export const reqCheckProduct = (name) => ajax.post('/manage/product/check', { name })
 
+//更新商品状态请求
 export const reqUpdateProductStatus = (_id, status) => ajax.post('/manage/product/status', { _id, status })
 
-export const reqDelProduct = (_id) => ajax.get('/manage/product/del?_id=' + _id)
+//删除商品请求
+export const reqDelProduct = (_id, images) => ajax.post('/manage/product/del?_id=', { _id, images })
+
+//根据_id获取商品
+export const reqGetProduct = (_id) => ajax.get('/manage/product/listone?_id=' + _id)
+
+//搜索框查询请求
+export const reqSearchProduct = (search, value) => ajax.post('/manage/product/search', { search, value })
+
+//添加角色
+export const reqAddRole = (name) => ajax.post('/manage/role/add', { name })
+
+//获取所有角色
+export const reqGetRoles = () => ajax.get('/manage/role/list')

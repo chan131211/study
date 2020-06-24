@@ -17,6 +17,13 @@ export default class PicturesWall extends React.Component {
     fileList: [],
   };
 
+  componentWillReceiveProps(nextProps) {
+    this.getUpdateImages(nextProps)
+  }
+  // componentDidMount() {
+  //   this.getUpdateImages()
+  // }
+
   //删除图片
   handleCancel = () => this.setState({ previewVisible: false });
 
@@ -31,7 +38,7 @@ export default class PicturesWall extends React.Component {
     //   previewVisible: true,
     // });
   };
-
+  
   //当file状态改变触发
   handleChange = async ({ file, fileList }) => {
       
@@ -56,6 +63,23 @@ export default class PicturesWall extends React.Component {
   //获取所有已上传文件的数组
   getImgs = () => this.state.fileList.map(file => file.url.substr(file.url.lastIndexOf('/') + 1))
 
+  //获取要修改的商品的图片
+  getUpdateImages = (nextProps) => {
+    const { images } = nextProps
+    if (images) {
+      let files = []
+      images.map( item => {
+        let data = {
+          status: 'done',
+          url: item,
+          uid: item
+        }
+        files.push(data)
+      })
+      this.setState({ fileList: files })
+    }
+  }
+
   render() {
     const { previewVisible, previewImage, fileList } = this.state;
     const uploadButton = (
@@ -73,6 +97,7 @@ export default class PicturesWall extends React.Component {
           fileList={fileList}
           onPreview={this.handlePreview}
           onChange={this.handleChange}
+          
         >
           {fileList.length >= 8 ? null : uploadButton}
         </Upload>

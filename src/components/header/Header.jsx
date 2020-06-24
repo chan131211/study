@@ -6,6 +6,7 @@ import memUtils from '../../utils/memUtils'
 import localUtils from '../../utils/localUtils'
 import MyButton from '../my-button/MyButton'
 import {getDate} from '../../utils/timeUtils'
+import {menuList} from '../../config/menu'
 
 class Header extends Component {
 
@@ -44,8 +45,22 @@ class Header extends Component {
         });
     }
 
+    // 获取title
+    getTitle = menuList => {
+        const path = this.props.location.pathname
+        menuList.forEach(item => {
+            if (item.key === path) {
+                this.title = item.title
+                return
+            } else if (item.childMenu){
+                this.getTitle(item.childMenu)
+            }
+        })
+    }
+
     render() {
-        const {currentTime} = this.state    
+        const {currentTime} = this.state   
+        this.getTitle(menuList)
         return (
             <div className="header">
                 <div className="header-top">
@@ -54,7 +69,7 @@ class Header extends Component {
                 </div>
                 <div className="header-bottom">
                     <div className="header-bottom-left">
-                        首页
+                        {this.title}
                     </div>
                     <div className="header-bottom-right">
                         <span>{currentTime}</span>

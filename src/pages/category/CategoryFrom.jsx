@@ -21,7 +21,6 @@ class CategoryFrom extends Component {
         const { getFieldDecorator } = this.props.form
         const { categorys } = this.props
         const { _id, name, flag } = this.props
-        
 
         if (flag) {
             return (

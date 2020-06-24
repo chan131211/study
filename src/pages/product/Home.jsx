@@ -1,11 +1,14 @@
 import React, { Component } from 'react'
-import { Card, Table, Button, Input, Select, Popconfirm, message } from 'antd'
-import { reqGetProducts, reqUpdateProductStatus, reqDelProduct } from '../../api/index'
+import { Form, Card, Table, Button, Input, Select, Popconfirm, Icon, message } from 'antd'
+import { reqGetProducts, reqUpdateProductStatus, reqDelProduct, reqSearchProduct } from '../../api/index'
+const Item = Form.Item
 const Option = Select.Option
-export default class Home extends Component {
+class Home extends Component {
     state = {
         loading: false,
         products: [], //所有商品
+        total: '' // 商品总条数
+
     }
 
     constructor(props) {
@@ -25,13 +28,18 @@ export default class Home extends Component {
     }
 
     //异步获取商品
-    getProducts = async () => {
+    getProducts = async (pageNum, pageSize = 2) => {
         this.setState({ loading: true})
-        const result = await reqGetProducts()
+        //向后台发送请求
+        const result = await reqGetProducts(pageNum, pageSize)
         if (result.status === 0) {
+            //获取后台返回的数据
+            const { total, list} = result.data
+            //更新状态
             this.setState({
                 loading: false,
-                products: result.data
+                products: list,
+                total
             })
         } else {
             this.setState({ loading: false })
@@ -46,11 +54,16 @@ export default class Home extends Component {
         if (status === 1) {
             btnValue = '上架'
             statusText = '停售'
+            return (
+            <span>
+                <Button  onClick={() => {this.productStatus(product)}}>{btnValue}</Button>&nbsp;
+                <span style={{color: '#F00'}}>{statusText}</span>
+            </span>
+        )
         }
-
         return (
             <span>
-                <Button onClick={() => {this.productStatus(product)}}>{btnValue}</Button>&nbsp;
+                <Button style={{color: '#F00'}} onClick={() => {this.productStatus(product)}}>{btnValue}</Button>&nbsp;
                 <span>{statusText}</span>
             </span>
         )
@@ -70,9 +83,23 @@ export default class Home extends Component {
         }
     }
 
+    //修改商品
+    // updateProduct = (product) => {
+        
+    //     this.props.history.push({ pathname: '/admin/product/add', state: { _id }})
+    // }
+
     //删除商品
-    delProduct = async (_id) => {
-        const result = await reqDelProduct(_id)
+    delProduct = async (product) => {
+        let { _id, images, detail } = product
+        const result2 = detail.split('"')
+        result2.forEach(item => {
+            const reg = /http:\/\/+/
+            if(reg.test(item)) {
+                images.push(item.substr(item.lastIndexOf('/') + 1))
+            } 
+        })
+        const result = await reqDelProduct(_id, images)
         if (result.status === 0) {
             this.getProducts()
             message.success(result.mes)
@@ -82,22 +109,39 @@ export default class Home extends Component {
     }
 
     //搜索框操作
-    ckeckProduct = () => {
-        const result = this.selectRef.current
-        const condition = this.inputRef.current.state.value
-        console.log(result,condition)
+    handleSubmit = e => {
+        e.preventDefault();
+        this.props.form.validateFields( async (err, values) => {
+            if (!err) {
+                this.setState({ loading: true})
+                const { search, condition } = values
+                const result = await reqSearchProduct(search, condition)
+                if (result.status === 0) {
+                    const products = result.data
+                    this.setState({
+                        products,
+                        loading: false
+                    })
+                } else {
+                    this.setState({ loading: false})
+                }
+            }
+        })
     }
 
     //商品的操作
     productManage = (product) => {
         return(
             <span>
-                <Button type="primary">详情</Button>&nbsp;&nbsp;
-                
+                <Button type="default">详情</Button>&nbsp;&nbsp;
+                <Button type="primary" onClick={() => {
+                    const { _id } = product
+                    this.props.history.push({ pathname: '/admin/product/add', state: { _id }})
+                }}>修改</Button>&nbsp;&nbsp;
                 
                 <Popconfirm
                     title="确定删除该商品吗?"
-                    onConfirm={() => {this.delProduct(product._id)}}
+                    onConfirm={() => {this.delProduct(product)}}
                     okText="是"
                     cancelText="否"
                 >
@@ -129,10 +173,9 @@ export default class Home extends Component {
                 width: 130,
                 render: this.productStatusStyle
             },
-            
             {
                 title: '操作',
-                width: 200,
+                width: 250,
                 render: this.productManage
             }
         ]
@@ -144,19 +187,36 @@ export default class Home extends Component {
     }
 
     render() {
-        let { loading, products } = this.state
+        let { loading, products, total } = this.state
+        const { getFieldDecorator } = this.props.form
         const extraButton = (
-            <Button type="primary" onClick={this.addProduct}>添加商品</Button>
+            
+            <Button onClick={this.addProduct}><Icon type="plus" />添加商品</Button>
         )
         const title = (
             <span>
-                <Select style={{width: 100}} ref={this.selectRef}>
-                    <Option value="1" >按名称</Option>
-                    <Option value="2" ref={this.selectRef}>按描述</Option>
-                </Select>
-                &nbsp; &nbsp; 
-                <Input style={{ width: 160}} placeholder="请输入关键字..." ref={this.inputRef}/>
-                <Button type="primary" onClick={this.ckeckProduct}>搜索</Button>
+                <Form layout="inline" onSubmit={this.handleSubmit} >
+                    <Item>
+                        {getFieldDecorator('search', {
+                            initialValue: '0',
+                        })(
+                            <Select style={{width: 100}} >
+                                <Option value="0" >按名称</Option>
+                                <Option value="1" >按描述</Option>
+                            </Select>   
+                        )}
+                    </Item>
+                    <Item>
+                        {getFieldDecorator('condition', {
+                                initialValue: '',
+                        })(
+                            <Input style={{ width: 160}} placeholder="请输入关键字..." />
+                        )}
+                    </Item>
+                    <Item>
+                        <Button type="primary" htmlType="submit">搜索</Button>
+                    </Item>
+                </Form>
             </span>
         )
         return (
@@ -168,10 +228,12 @@ export default class Home extends Component {
                         loading={loading}
                         columns={this.columns}
                         dataSource={products}
-                        pagination={{defaultCurrent: 1, defaultPageSize: 5, showQuickJumper: true}}
+                        pagination={{ total, defaultPageSize: 2, showQuickJumper: true, onChange: this.getProducts}}
                     />   
                 </Card>
             </div>
         )
     }
 }
+
+export default  Form.create()(Home)
