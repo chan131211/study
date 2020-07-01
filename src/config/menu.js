@@ -24,6 +24,11 @@ export const menuList = [
     {
         title: '角色管理',
         key: '/admin/role',
+        icon: 'key'
+    },
+    {
+        title: '用户管理',
+        key: '/admin/user',
         icon: 'user'
     }
 ]

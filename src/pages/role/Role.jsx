@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import { Card, Button, Table, Modal, message} from 'antd'
 import RoleForm from './RoleForm'
-import { reqAddRole, reqGetRoles } from '../../api/index'
+import AuthForm from './AuthForm'
+import { reqAddRole, reqGetRoles, reqUpdateRole } from '../../api/index'
+import memUtils from '../../utils/memUtils' 
 export default class Role extends Component {
     state = {
         loading: false,
@@ -17,9 +19,11 @@ export default class Role extends Component {
         //创建一refs个对象
         this.authRef = React.createRef()
     }
+
     componentWillMount() {
         this.initColumns()
     }
+
     componentDidMount() {
         this.getRoles()
     }
@@ -99,6 +103,30 @@ export default class Role extends Component {
         }
     }
 
+    //更新权限
+    updateRole = async () => {
+        //获取原角色权限
+        const { role } = this.state
+        //获取子组件提交的新权限
+        const menus = this.authRef.current.getMenus()
+        //新权限覆盖原权限
+        role.menus = menus
+
+        //更新授权人
+        role.auth_name = memUtils.isLogin.username
+
+        //更新操作
+        const result = await reqUpdateRole(role)
+        if (result.status === 0) {
+            this.setState({ isShowAuth: false })
+            message.success('角色权限更新成功')
+            // 重新获取状态
+            this.getRoles() 
+        } else {
+            message.error(result.mes)
+        }
+    }
+
     //取消添加角色操作
     handleCancel = () => {
         this.setState({ isShow: false })
@@ -108,7 +136,10 @@ export default class Role extends Component {
     //取消设置权限操作
     handleAuthCancel = () => {
         this.setState({ isShowAuth: false})
+        
     }
+
+
     render() {
         const { loading, roles, isShow, isShowAuth, role } = this.state
         const title = (
@@ -142,10 +173,10 @@ export default class Role extends Component {
                    <Modal
                         title="设置权限"
                         visible={isShowAuth}
-                        onOk={this.setAuth}
+                        onOk={this.updateRole}
                         onCancel={this.handleAuthCancel}
                    >
-                    
+                       <AuthForm role={role} ref={this.authRef}/>
                    </Modal>
                </Card>
             </div>

@@ -47,3 +47,27 @@ export const reqAddRole = (name) => ajax.post('/manage/role/add', { name })
 
 //获取所有角色
 export const reqGetRoles = () => ajax.get('/manage/role/list')
+
+//更新角色权限 
+export const reqUpdateRole = (role) => ajax.post('/manage/role/update', { role })
+
+//根据_id查找角色权限
+export const reqCheckRole =_id => ajax.get('/manage/role/check?_id=' + _id)
+  
+//添加用户
+export const reqAddUser = (user) => ajax.post('/manage/user/add', { user })
+
+//获取所有用户
+export const reqGetUsers = () => ajax.post('/manage/user/list')
+
+//更新用户
+export const reqUpdateUser = (user) => ajax.post('/manage/user/update', { user })
+
+//查找同名用户
+export const reqCheckUser = (username) => ajax.post('/manage/user/check', { username }) 
+
+//删除用户
+export const reqDeleteUser = _id => ajax.get('/manage/user/delete?_id=' + _id)
+
+
+

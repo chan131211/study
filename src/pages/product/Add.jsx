@@ -268,7 +268,7 @@ class Add extends Component {
                     </Item>
                     <Item label="商品分类:">
                         {getFieldDecorator('categoryId', {
-                            initialValue: '',
+                            initialValue: '0',
                             rules: [
                                 { required: true, message: '必须填写商品分类!' },
                                 
